@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * TODO Parte 1 Punto F: Documente la invariante de la clase.
  */
 
-public class Festival
+public class Festival 
 {
 
     // -----------------------------------------------------------------
