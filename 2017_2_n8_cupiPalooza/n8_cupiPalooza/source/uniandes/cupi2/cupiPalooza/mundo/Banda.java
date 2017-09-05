@@ -25,10 +25,15 @@ import java.io.Serializable;
 
 public class Banda implements Serializable
 {
-    // -----------------------------------------------------------------
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5676577076179727829L;
+
+	// -----------------------------------------------------------------
     // Atributos
     // -----------------------------------------------------------------
-private final static long serialVersionUID = 1L;
+	
     /**
      * Nombre de la banda.
      */

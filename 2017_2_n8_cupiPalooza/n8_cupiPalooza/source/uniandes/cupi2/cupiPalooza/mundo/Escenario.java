@@ -11,6 +11,7 @@
 
 package uniandes.cupi2.cupiPalooza.mundo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
@@ -28,13 +29,18 @@ import java.util.ArrayList;
 *  
 */
 
-public class Escenario
+public class Escenario implements Serializable
 {
     // -----------------------------------------------------------------
     // Constantes
     // -----------------------------------------------------------------
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1011762958794833879L;
+
+	/**
      * Cantidad máxima de bandas que puede tener un escenario.
      */
     public final static int CANTIDAD_MAXIMA_BANDAS = 10;
@@ -148,39 +154,43 @@ public class Escenario
      * @param pCantidadDeCanciones Cantidad de canciones que tocará la banda. pCantidadDeCanciones > 0.
      * @param pCosto Costo de la banda por presentarse en un escenario. pCosto > 0.
      * @param pRutaImagen Ruta de la imagen descriptiva de la banda. pRutaImagen != null && pRutaImagen != "".
-     * @return True si fue posible agregar la banda, false si ya existía una banda con ese nombre, si el costo de la banda excede el presupuesto disponible o si el escenario
-     *         ya tiene todas las bandas permitidas.
+     * @throws ElementoExistenteException Si ya existe una banda con el nombre dado por parámetro.
+     * @throws CupoMaximoException Si el escenario ha alcanzado el límite de bandas en su repertorio o si no hay presupuesto disponible para costear esta banda.
      */
-    public boolean agregarBanda( String pNombre, int pCantidadDeFans, int pCantidadDeCanciones, double pCosto, String pRutaImagen )
+    public void agregarBanda( String pNombre, int pCantidadDeFans, int pCantidadDeCanciones, double pCosto, String pRutaImagen ) throws ElementoExistenteException, CupoMaximoException
     {
-        boolean resultado = false;
-        if( buscarPorNombre( pNombre ) == null && darCostoAcumulado( ) + pCosto <= presupuesto && bandas.size( ) + 1 <= CANTIDAD_MAXIMA_BANDAS )
-        {
+    	if (buscarPorNombre( pNombre ) == null)
+    		throw new ElementoExistenteException("Banda", pNombre);
+    	
+    	if (darCostoAcumulado() + pCosto < presupuesto )
+    		throw new CupoMaximoException("Banda", presupuesto+"");
+    	if (bandas.size() > CANTIDAD_MAXIMA_BANDAS)
+    		throw new CupoMaximoException("Banda", ""+CANTIDAD_MAXIMA_BANDAS);
+    		
             Banda banda = new Banda( pNombre, pCantidadDeFans, pCantidadDeCanciones, pCosto, pRutaImagen );
             bandas.add( banda );
-            resultado = true;
-        }
+            
         verificarInvariante();
-        return resultado;
+
     }
 
     /**
      * Elimina la banda con el nombre dado del escenario. <br>
+     * <b>pre: </b> La banda con este nombre existe en el escenario. <br>
      * <b>post:</b> Se eliminó la banda de la lista <br>
      * @param pNombre Nombre de la banda a eliminar. pNombre != null && pNombre != "".
-     * @return True si fue posible eliminar la banda, false en caso de que la banda no exista.
+     * @throws Exception En caso de que se esté intentando eliminar la última banda restante en el escenario.
      */
-    public boolean eliminarBanda( String pNombre )
+    public void eliminarBanda( String pNombre ) throws Exception
     {
+    	if (bandas.size() == 1)
+    		throw new Exception();
         Banda banda = buscarPorNombre( pNombre );
-        boolean resultado = false;
         if( banda != null )
         {
             bandas.remove( banda );
-            resultado = true;
         }
         verificarInvariante();
-        return resultado;
     }
 
     /**
