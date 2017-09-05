@@ -11,346 +11,405 @@
 
 package uniandes.cupi2.cupiPalooza.mundo;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+
+import uniandes.cupi2.centroDeConvenciones.mundo.EspacioTieneEventoFechaException;
+import uniandes.cupi2.centroDeConvenciones.mundo.FormatoArchivoException;
+import uniandes.cupi2.centroDeConvenciones.mundo.PersistenciaException;
 
 /**
  * Festival de música. <br>
  * TODO Parte 1 Punto F: Documente la invariante de la clase.
  */
 
-public class Festival 
+public class Festival implements Serializable
 {
 
-    // -----------------------------------------------------------------
-    // Constantes
-    // -----------------------------------------------------------------
+	// -----------------------------------------------------------------
+	// Constantes
+	// -----------------------------------------------------------------
 
-    /**
-     * Cantidad máxima de escenarios en el festival.
-     */
-    public final static int CANTIDAD_MAXIMA_ESCENARIOS = 5;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5516502844994245381L;
 
-    // -----------------------------------------------------------------
-    // Atributos
-    // -----------------------------------------------------------------
+	/**
+	 * Cantidad máxima de escenarios en el festival.
+	 */
+	public final static int CANTIDAD_MAXIMA_ESCENARIOS = 5;
 
-    /**
-     * Escenarios que componen el festival.
-     */
-    private ArrayList escenarios;
+	// -----------------------------------------------------------------
+	// Atributos
+	// -----------------------------------------------------------------
 
-    // -----------------------------------------------------------------
-    // Constructores
-    // -----------------------------------------------------------------
+	/**
+	 * Escenarios que componen el festival.
+	 */
+	private ArrayList escenarios;
 
-/**
-     * Construye el festival con su estado inicial a partir de un archivo serializado. <br>
-     * <b>post: </b> Se cargó el estado inicial del festival con la información del archivo dado por parámetro. <br>
-     * Si hay algún problema cargando el archivo, lanza excepción. <br>
-     * Si no existe el archivo seralizado, crea el arrayList vacío.
-     * @param pRuta Ruta del archivo del cual se cargará el estado del mundo.
-     * @throws PersistenciaException Se lanza una excepción si hay algún error cargando los datos del archivo.
- * @throws CupoMaximoException 
- * @throws ElementoExistenteException 
-     */
-    public Festival( String pRuta ) throws PersistenciaException, ElementoExistenteException, CupoMaximoException
-    {
-        escenarios = new ArrayList( );
+	// -----------------------------------------------------------------
+	// Constructores
+	// -----------------------------------------------------------------
 
-        crearEscenario( "Movistar", 20000000, 1 );
+	/**
+	 * Construye el festival con su estado inicial a partir de un archivo serializado. <br>
+	 * <b>post: </b> Se cargó el estado inicial del festival con la información del archivo dado por parámetro. <br>
+	 * Si hay algún problema cargando el archivo, lanza excepción. <br>
+	 * Si no existe el archivo seralizado, crea el arrayList vacío.
+	 * @param pRuta Ruta del archivo del cual se cargará el estado del mundo.
+	 * @throws PersistenciaException Se lanza una excepción si hay algún error cargando los datos del archivo.
+	 * @throws CupoMaximoException 
+	 * @throws ElementoExistenteException 
+	 */
+	public Festival( File pFile) throws PersistenciaException, ElementoExistenteException, CupoMaximoException
+	{
+		if (pFile.exists())
+		{
+			cargar(pFile.getAbsolutePath());
+		}
+		else
+			escenarios = new ArrayList();
+	}
 
-        agregarBandaAEscenario( 1, "Seis Peatones", 56720, 5, 750000, "./data/imagenes/bandas/rock.png" );
-        agregarBandaAEscenario( 1, "Zoey", 4820, 8, 850000, "./data/imagenes/bandas/pop.png" );
-        agregarBandaAEscenario( 1, "Randy Travis", 12760, 3, 1200000, "./data/imagenes/bandas/country.png" );
-        agregarBandaAEscenario( 1, "Batalla Épica", 34877, 4, 70000, "./data/imagenes/bandas/house.png" );
+	// -----------------------------------------------------------------
+	// Métodos
+	// -----------------------------------------------------------------
 
-        crearEscenario( "Adidas", 50000000, 2 );
-        agregarBandaAEscenario( 2, "Plásticos Adolescentes", 475312, 12, 480000, "./data/imagenes/bandas/pop.png" );
-        agregarBandaAEscenario( 2, "Monos Sin Disfraz", 7945138, 6, 1050000, "./data/imagenes/bandas/rock.png" );
-        agregarBandaAEscenario( 2, "Korean Kitchen", 687124, 7, 220000, "./data/imagenes/bandas/house.png" );
-        agregarBandaAEscenario( 2, "Cultura Profética", 77621, 3, 876000, "./data/imagenes/bandas/reggae.png" );
-        agregarBandaAEscenario( 2, "John Waters", 64523, 8, 890000, "./data/imagenes/bandas/country.png" );
+	/**
+	 * Retorna el escenario con el número recibido por parámetro.
+	 * @param pNumero Número del escenario buscado. pNumero > 0 && pNumero <= CANTIDAD_MAXIMA_ESCENARIOS.
+	 * @return El escenario con el número especificado.
+	 */
+	public Escenario darEscenario( int pNumero )
+	{
+		boolean termino = false;
+		Escenario buscado = null;
+		for( int i = 0; i < escenarios.size( ) && !termino; i++ )
+		{
+			Escenario actual = ( Escenario )escenarios.get( i );
+			if( actual.darNumero( ) == pNumero )
+			{
+				buscado = actual;
+				termino = true;
+			}
+		}
+		return buscado;
+	}
 
-        crearEscenario( "Google", 15000000, 3 );
-        agregarBandaAEscenario( 3, "Pixie Wings", 56720, 10, 564000, "./data/imagenes/bandas/pop.png" );
-        agregarBandaAEscenario( 3, "Fiesta Flow", 587412, 5, 1300000, "./data/imagenes/bandas/reggae.png" );
-        agregarBandaAEscenario( 3, "Los Melancólicos", 22648, 8, 2400000, "./data/imagenes/bandas/rock.png" );
+	/**
+	 * Retorna el siguiente número disponible para un escenario.
+	 * @return Número válido para asignar a un nuevo escenario. En caso de no haber más números disponibles retorna 0.
+	 */
+	public int darNumeroDisponible( )
+	{
+		int numero = 0;
+		boolean termino = false;
+		for( int i = 1; i <= CANTIDAD_MAXIMA_ESCENARIOS && !termino; i++ )
+		{
+			int provisional = i;
+			for( int j = 0; j < escenarios.size( ); j++ )
+			{
+				Escenario actual = ( Escenario )escenarios.get( j );
+				if( actual.darNumero( ) == provisional )
+				{
+					provisional++;
+				}
+			}
 
-    }
+			if( provisional == i )
+			{
+				termino = true;
+				numero = provisional;
+			}
+		}
+		return numero;
+	}
 
-    // -----------------------------------------------------------------
-    // Métodos
-    // -----------------------------------------------------------------
+	/**
+	 * Retorna la lista de escenarios en el festival.
+	 * @return Lista de los escenarios.
+	 */
+	public ArrayList darEscenarios( )
+	{
+		return escenarios;
+	}
 
-    /**
-     * Retorna el escenario con el número recibido por parámetro.
-     * @param pNumero Número del escenario buscado. pNumero > 0 && pNumero <= CANTIDAD_MAXIMA_ESCENARIOS.
-     * @return El escenario con el número especificado.
-     */
-    public Escenario darEscenario( int pNumero )
-    {
-        boolean termino = false;
-        Escenario buscado = null;
-        for( int i = 0; i < escenarios.size( ) && !termino; i++ )
+	/**
+	 * Crea un escenario con la información recibida por parámetro. <br>
+	 * <b>post: </b> Se creó el escenario con el número especificado, el patrocinador y el presupuesto dados.
+	 * @param pPatrocinador Nombre del patrocinador. pPatrocinador != null && pPatrocinador != "".
+	 * @param pPresupuesto Presupuesto para el escenario. pPresupuesto > 0.
+	 * @param pNumero Número del escenario. pNumero > 0 && pNumero <= 5.
+	 * @throws ElementoExistenteException Si ya existe un escenario con este patrocinador.
+	 * @throws CupoMaximoException Si se ha alcanzado el límite de escenarios en el festival.
+	 */
+	public void crearEscenario( String pPatrocinador, double pPresupuesto, int pNumero ) throws ElementoExistenteException, CupoMaximoException
+	{
+		boolean repetido = false;
+		if( escenarios.size( ) > CANTIDAD_MAXIMA_ESCENARIOS )
+			throw new CupoMaximoException("Escenario", "Cantidad Maxima Escenarios");
+
+		for( int i = 0; i < escenarios.size( ) && !repetido; i++ )
+		{
+			Escenario actual = ( Escenario )escenarios.get( i );
+			if( actual.darPatrocinador( ).equals( pPatrocinador ) )
+				repetido = true;
+		}
+		if( !repetido )
+		{
+			Escenario nuevo = new Escenario( pNumero, pPatrocinador, pPresupuesto );
+			escenarios.add( nuevo );
+		}
+		else
+			throw new ElementoExistenteException("Escenario", pPatrocinador);
+
+	}
+
+	/**
+	 * Elimina un escenario. <br>
+	 * <b>post: </b> El escenario fue eliminado del festival.
+	 * @param pNumero Número del escenario a eliminar. pNumero > 0 && pNumero <= CANTIDAD_MAXIMA_ESCENARIOS.
+	 * @return true si fue posible eliminar el escenario, false en caso de que el escenario no exista.
+	 */
+	public boolean eliminarEscenario( int pNumero )
+	{
+		boolean termino = false;
+		for( int i = 0; i < escenarios.size( ) && !termino; i++ )
+		{
+			Escenario actual = ( Escenario )escenarios.get( i );
+			if( actual.darNumero( ) == pNumero )
+			{
+				escenarios.remove( actual );
+				termino = true;
+			}
+		}
+		return termino;
+	}
+
+	/**
+	 * Agrega una banda a un escenario. <br>
+	 * <b>post: </b> Al escenario especificado se agregó una nueva banda en su repertorio.
+	 * @param pEscenario Número del escenario al cual se agregará la banda. pNumero > 0 && pNumero <= 5.
+	 * @param pNombre Nombre de la banda. pNombre != null && pNombre != "".
+	 * @param pCantidadDeFans Cantidad de fans que tiene la banda. pCantidadDeFans > 0.
+	 * @param pCantidadDeCanciones Cantidad de canciones que tocará la banda. pCantidadDeCanciones > 0.
+	 * @param pCosto Costo de la banda por presentarse en un escenario. pCosto > 0.
+	 * @param pRutaImagen Ruta de la imagen descriptiva de la banda. pRutaImagen != null && pRutaImagen != "".
+	 * @throws ElementoExistenteException Si ya existe una banda con este nombre en este escenario.
+	 * @throws CupoMaximoException Si el escenario al que se desea agregar la banda ha alcanzado su límite de bandas.
+	 */
+	public void agregarBandaAEscenario( int pEscenario, String pNombre, int pCantidadDeFans, int pCantidadDeCanciones, double pCosto, String pRutaImagen ) throws ElementoExistenteException, CupoMaximoException
+	{		
+		Escenario escenario = darEscenario( pEscenario );
+		escenario.agregarBanda( pNombre, pCantidadDeFans, pCantidadDeCanciones, pCosto, pRutaImagen );
+
+	}
+
+	/**
+	 * Elimina la banda con el nombre dado del escenario especificado. <br>
+	 * <b>pre: </b> La banda con este nombre existe en el escenario. <br>
+	 * <b>post: </b> Se eliminó la banda especificada del escenario.
+	 * @param pEscenario Número del escenario al cual se agregará la banda. pNumero > 0 && pNumero <= CANTIDAD_MAXIMA_ESCENARIOS.
+	 * @param pNombre Nombre de la banda. pNombre != null && pNombre != "". Existe una banda por este nombre.
+	 * @throws Exception En caso de que se esté intentando eliminar la última banda restante en el escenario.
+	 */
+	public void eliminarBandaEscenario( int pEscenario, String pNombre ) throws Exception
+	{
+		Escenario escenario = darEscenario( pEscenario );
+		escenario.eliminarBanda(pNombre);
+	}
+
+	/**
+	 * Ordena ascendentemente las bandas de todos los escenarios por nombre. <br>
+	 * <b> post: </b> Las bandas en los escenarios fueron ordenadas alfabéticamente por su nombre.
+	 */
+	public void ordenarPorNombre( )
+	{
+		for( int i = 0; i < escenarios.size( ); i++ )
+		{
+			Escenario actual = ( Escenario )escenarios.get( i );
+			if( actual != null )
+			{
+				actual.ordenarPorNombre( );
+			}
+		}
+	}
+
+	/**
+	 * Ordena descendentemente las bandas de todos los escenarios por su cantidad de fans. <br>
+	 * <b> post: </b> Las bandas fueron ordenadas en los escenarios según su cantidad de fans.
+	 */
+	public void ordenarPorCantidadDeFans( )
+	{
+		for( int i = 0; i < escenarios.size( ); i++ )
+		{
+			Escenario actual = ( Escenario )escenarios.get( i );
+			if( actual != null )
+			{
+				actual.ordenarPorCantidadDeFans( );
+			}
+		}
+	}
+
+	/**
+	 * Ordena ascendentemente las bandas en los escenarios por su cantidad de canciones. <br>
+	 * <b> post: </b> Las bandas fueron ordenadas en los escenarios según su cantidad de canciones.
+	 */
+	public void ordenarPorCantidadDeCanciones( )
+	{
+		for( int i = 0; i < escenarios.size( ); i++ )
+		{
+			Escenario actual = ( Escenario )escenarios.get( i );
+			if( actual != null )
+			{
+				actual.ordenarPorCantidadDeCanciones( );
+			}
+		}
+	}
+
+	/**
+	 * Guarda el estado del sistema en un archivo serializado. <br>
+	 * <b>post: </b> Se guardó la lista de escenarios en el archivo dado. <br>
+	 * @param pRuta Ruta del archivo donde se guarda el estado del sistema. pRuta != null && pRuta != "".
+	 * @throws PersistenciaException Se lanza una excepción si hay algún error guardando los datos del archivo.
+	 */
+	public void guardar( String pRuta ) throws PersistenciaException
+	{
+		try
         {
-            Escenario actual = ( Escenario )escenarios.get( i );
-            if( actual.darNumero( ) == pNumero )
-            {
-                buscado = actual;
-                termino = true;
-            }
+            ObjectOutputStream objeto = new ObjectOutputStream( new FileOutputStream( pRuta ) );
+            objeto.writeObject( escenarios );
+            objeto.close( );
         }
-        return buscado;
-    }
-
-    /**
-     * Retorna el siguiente número disponible para un escenario.
-     * @return Número válido para asignar a un nuevo escenario. En caso de no haber más números disponibles retorna 0.
-     */
-    public int darNumeroDisponible( )
-    {
-        int numero = 0;
-        boolean termino = false;
-        for( int i = 1; i <= CANTIDAD_MAXIMA_ESCENARIOS && !termino; i++ )
+        catch(IOException e)
         {
-            int provisional = i;
-            for( int j = 0; j < escenarios.size( ); j++ )
-            {
-                Escenario actual = ( Escenario )escenarios.get( j );
-                if( actual.darNumero( ) == provisional )
-                {
-                    provisional++;
-                }
-            }
-
-            if( provisional == i )
-            {
-                termino = true;
-                numero = provisional;
-            }
+            throw new PersistenciaException( "Error al guardar:" + e.getMessage( ) );
         }
-        return numero;
-    }
+	}
 
-    /**
-     * Retorna la lista de escenarios en el festival.
-     * @return Lista de los escenarios.
-     */
-    public ArrayList darEscenarios( )
-    {
-        return escenarios;
-    }
 
-    /**
-     * Crea un escenario con la información recibida por parámetro. <br>
-     * <b>post: </b> Se creó el escenario con el número especificado, el patrocinador y el presupuesto dados.
-     * @param pPatrocinador Nombre del patrocinador. pPatrocinador != null && pPatrocinador != "".
-     * @param pPresupuesto Presupuesto para el escenario. pPresupuesto > 0.
-     * @param pNumero Número del escenario. pNumero > 0 && pNumero <= 5.
-     * @throws ElementoExistenteException Si ya existe un escenario con este patrocinador.
-     * @throws CupoMaximoException Si se ha alcanzado el límite de escenarios en el festival.
-     */
-    public void crearEscenario( String pPatrocinador, double pPresupuesto, int pNumero ) throws ElementoExistenteException, CupoMaximoException
-   {
-        boolean repetido = false;
-        if( escenarios.size( ) > CANTIDAD_MAXIMA_ESCENARIOS )
-        	throw new CupoMaximoException("Escenario", "Cantidad Maxima Escenarios");
-        
-            for( int i = 0; i < escenarios.size( ) && !repetido; i++ )
-            {
-                Escenario actual = ( Escenario )escenarios.get( i );
-                if( actual.darPatrocinador( ).equals( pPatrocinador ) )
-                    repetido = true;
-            }
-            if( !repetido )
-            {
-                Escenario nuevo = new Escenario( pNumero, pPatrocinador, pPresupuesto );
-                escenarios.add( nuevo );
-            }
-            else
-            	throw new ElementoExistenteException("Escenario", pPatrocinador);
-        
-    }
+	/**
+	 * Carga el estado del sistemas de un archivo serializado. <br>
+	 * <b>post: </b> Se inicializó la lista de escenarios a partir del archivo dado. <br>
+	 * @param pArchivo Archivo con la información del sistema. pArchivo != null.
+	 * @throws PersistenciaException Se lanza una excepción si hay algún error cargando los datos del archivo.
+	 */
+	public void cargar( String pArchivo ) throws PersistenciaException
+	{
+		try
+        {ObjectInputStream objeto = new ObjectInputStream( new FileInputStream( pArchivo ) );
 
-    /**
-     * Elimina un escenario. <br>
-     * <b>post: </b> El escenario fue eliminado del festival.
-     * @param pNumero Número del escenario a eliminar. pNumero > 0 && pNumero <= CANTIDAD_MAXIMA_ESCENARIOS.
-     * @return true si fue posible eliminar el escenario, false en caso de que el escenario no exista.
-     */
-    public boolean eliminarEscenario( int pNumero )
-    {
-        boolean termino = false;
-        for( int i = 0; i < escenarios.size( ) && !termino; i++ )
+        escenarios= ( ArrayList)objeto.readObject( ) ;
+        objeto.close( );
+        }
+        catch (Exception e)
         {
-            Escenario actual = ( Escenario )escenarios.get( i );
-            if( actual.darNumero( ) == pNumero )
-            {
-                escenarios.remove( actual );
-                termino = true;
-            }
+            throw new PersistenciaException( "error:" + e.getMessage( ) );
         }
-        return termino;
-    }
+	}
 
-    /**
-     * Agrega una banda a un escenario. <br>
-     * <b>post: </b> Al escenario especificado se agregó una nueva banda en su repertorio.
-     * @param pEscenario Número del escenario al cual se agregará la banda. pNumero > 0 && pNumero <= 5.
-     * @param pNombre Nombre de la banda. pNombre != null && pNombre != "".
-     * @param pCantidadDeFans Cantidad de fans que tiene la banda. pCantidadDeFans > 0.
-     * @param pCantidadDeCanciones Cantidad de canciones que tocará la banda. pCantidadDeCanciones > 0.
-     * @param pCosto Costo de la banda por presentarse en un escenario. pCosto > 0.
-     * @param pRutaImagen Ruta de la imagen descriptiva de la banda. pRutaImagen != null && pRutaImagen != "".
-     * @throws ElementoExistenteException Si ya existe una banda con este nombre en este escenario.
-     * @throws CupoMaximoException Si el escenario al que se desea agregar la banda ha alcanzado su límite de bandas.
-     */
-    public void agregarBandaAEscenario( int pEscenario, String pNombre, int pCantidadDeFans, int pCantidadDeCanciones, double pCosto, String pRutaImagen ) throws ElementoExistenteException, CupoMaximoException
-    {
-        Escenario escenario = darEscenario( pEscenario );
-        boolean resultado = escenario.agregarBanda( pNombre, pCantidadDeFans, pCantidadDeCanciones, pCosto, pRutaImagen );
- 
-    }
 
-    /**
-     * Elimina la banda con el nombre dado del escenario especificado. <br>
-     * <b>pre: </b> La banda con este nombre existe en el escenario. <br>
-     * <b>post: </b> Se eliminó la banda especificada del escenario.
-     * @param pEscenario Número del escenario al cual se agregará la banda. pNumero > 0 && pNumero <= CANTIDAD_MAXIMA_ESCENARIOS.
-     * @param pNombre Nombre de la banda. pNombre != null && pNombre != "". Existe una banda por este nombre.
-     * @throws Exception En caso de que se esté intentando eliminar la última banda restante en el escenario.
-     */
-    public void eliminarBandaEscenario( int pEscenario, String pNombre ) throws Exception
-    {
-        Escenario escenario = darEscenario( pEscenario );
-    }
-
-    /**
-     * Ordena ascendentemente las bandas de todos los escenarios por nombre. <br>
-     * <b> post: </b> Las bandas en los escenarios fueron ordenadas alfabéticamente por su nombre.
-     */
-    public void ordenarPorNombre( )
-    {
-        for( int i = 0; i < escenarios.size( ); i++ )
+	/**
+	 * Carga el estado del sistemas de un archivo de texto. <br>
+	 * <b>post: </b> Se carga la información de los escenarios y las bandas que se encuentran en el archivo. <br>
+	 * @param pNombreArchivo Archivo con la información del sistema. pNombreArchivo != null.
+	 * @throws PersistenciaException Se lanza una excepción si hay algún error cargando los datos del archivo.
+	 * @throws FormatoArchivoException Si el formato del archivo es erróneo y no puede ser leído.
+	 */
+	public void importarArchivoTexto( File pNombreArchivo ) throws PersistenciaException, FormatoArchivoException
+	{
+		try
+		{
+		 File archivo = new File(pNombreArchivo.getAbsolutePath());
+         FileReader reader = new FileReader(archivo);
+         BufferedReader lector= new BufferedReader( reader );
+         
+         String linea = lector.readLine();
+         escenarios = new ArrayList();
+         int posicionEscenario = -1;
+         while (linea != null)
+         {
+        	 
+        	 String[] valores = lector.readLine().split(";");
+        	 if (valores.length == 3)
+        	 {
+        		 String patrocinador = valores[0];
+        		 int presupuesto = Integer.parseInt(valores[1]);
+        		 int numero = Integer.parseInt(valores[2]);
+        		 crearEscenario(patrocinador, presupuesto, numero);
+        		 posicionEscenario++;
+        	 }
+        	 else if (valores.length == 5)
+        	 {
+        		 
+        	 }
+        		 
+         }
+         
+		}
+        catch(IOException e)
         {
-            Escenario actual = ( Escenario )escenarios.get( i );
-            if( actual != null )
-            {
-                actual.ordenarPorNombre( );
-            }
+            throw new FormatoArchivoException("Error: "+ e.getMessage( ) );
         }
-    }
-
-    /**
-     * Ordena descendentemente las bandas de todos los escenarios por su cantidad de fans. <br>
-     * <b> post: </b> Las bandas fueron ordenadas en los escenarios según su cantidad de fans.
-     */
-    public void ordenarPorCantidadDeFans( )
-    {
-        for( int i = 0; i < escenarios.size( ); i++ )
+        catch(Exception e)
         {
-            Escenario actual = ( Escenario )escenarios.get( i );
-            if( actual != null )
-            {
-                actual.ordenarPorCantidadDeFans( );
-            }
+            throw new FormatoArchivoException("Error: " + e.getMessage( ) );
         }
-    }
-
-    /**
-     * Ordena ascendentemente las bandas en los escenarios por su cantidad de canciones. <br>
-     * <b> post: </b> Las bandas fueron ordenadas en los escenarios según su cantidad de canciones.
-     */
-    public void ordenarPorCantidadDeCanciones( )
-    {
-        for( int i = 0; i < escenarios.size( ); i++ )
-        {
-            Escenario actual = ( Escenario )escenarios.get( i );
-            if( actual != null )
-            {
-                actual.ordenarPorCantidadDeCanciones( );
-            }
-        }
-    }
-    
-    /**
-     * Guarda el estado del sistema en un archivo serializado. <br>
-     * <b>post: </b> Se guardó la lista de escenarios en el archivo dado. <br>
-     * @param pRuta Ruta del archivo donde se guarda el estado del sistema. pRuta != null && pRuta != "".
-     * @throws PersistenciaException Se lanza una excepción si hay algún error guardando los datos del archivo.
-     */
-    public void guardar( String pRuta ) throws PersistenciaException
-    {
-    	
-    }
+         
+         
+	}
 
 
-/**
-     * Carga el estado del sistemas de un archivo serializado. <br>
-     * <b>post: </b> Se inicializó la lista de escenarios a partir del archivo dado. <br>
-     * @param pArchivo Archivo con la información del sistema. pArchivo != null.
-     * @throws PersistenciaException Se lanza una excepción si hay algún error cargando los datos del archivo.
-     */
-    public void cargar( String pArchivo ) throws PersistenciaException
-    {
-    	
-    }
-    
 
-/**
-     * Carga el estado del sistemas de un archivo de texto. <br>
-     * <b>post: </b> Se carga la información de los escenarios y las bandas que se encuentran en el archivo. <br>
-     * @param pNombreArchivo Archivo con la información del sistema. pNombreArchivo != null.
-     * @throws PersistenciaException Se lanza una excepción si hay algún error cargando los datos del archivo.
-     * @throws FormatoArchivoException Si el formato del archivo es erróneo y no puede ser leído.
-     */
-    public void importarArchivoTexto( File pNombreArchivo ) throws PersistenciaException, FormatoArchivoException
-    {
-    	
-    }
-    
+	/**
+	 * Genera un reporte con los costos de los escenarios en el festival. <br>
+	 * <b>post: </b> El reporte de los costos del festival fue generado. <br>
+	 * @param pRuta Ruta donde se desea guardar el archivo con el reporte. pRuta != null && pRutal != "".
+	 * @throws PersistenciaException Se lanza una excepción si hay un error en la generación del reporte.
+	 */
+	public void generarReporte( String pRuta ) throws PersistenciaException
+	{
+
+	}
 
 
-/**
-     * Genera un reporte con los costos de los escenarios en el festival. <br>
-     * <b>post: </b> El reporte de los costos del festival fue generado. <br>
-     * @param pRuta Ruta donde se desea guardar el archivo con el reporte. pRuta != null && pRutal != "".
-     * @throws PersistenciaException Se lanza una excepción si hay un error en la generación del reporte.
-     */
-    public void generarReporte( String pRuta ) throws PersistenciaException
-    {
-    	
-    }
 
-    
+	// -----------------------------------------------------------------
+	// Invariante
+	// -----------------------------------------------------------------
 
-    // -----------------------------------------------------------------
-    // Invariante
-    // -----------------------------------------------------------------
+	// TODO Parte 1 Punto G: Documente e implemente la invariante de la clase.
+	// Si lo necesita, puede crear método privados adicionales.
 
-    // TODO Parte 1 Punto G: Documente e implemente la invariante de la clase.
-    // Si lo necesita, puede crear método privados adicionales.
+	// -----------------------------------------------------------------
+	// Puntos de Extensión
+	// -----------------------------------------------------------------
 
-    // -----------------------------------------------------------------
-    // Puntos de Extensión
-    // -----------------------------------------------------------------
+	/**
+	 * Extensión 1.
+	 * @return respuesta1.
+	 */
+	public String metodo1( )
+	{
+		return "Respuesta 1";
+	}
 
-    /**
-     * Extensión 1.
-     * @return respuesta1.
-     */
-    public String metodo1( )
-    {
-        return "Respuesta 1";
-    }
-
-    /**
-     * Extensión 2.
-     * @return respuesta2.
-     */
-    public String metodo2( )
-    {
-        return "Respuesta 2";
-    }
+	/**
+	 * Extensión 2.
+	 * @return respuesta2.
+	 */
+	public String metodo2( )
+	{
+		return "Respuesta 2";
+	}
 }
