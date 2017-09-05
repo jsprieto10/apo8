@@ -8,20 +8,23 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 
-public class ElementoExistenteException extends Exception {
+public class CupoMaximoException extends Exception{
 
-	public final static String PATROCINADOR= "Patrocinador";
-	public final static String BANDA= "Banda";
-	String tipoRepetido;
-	String nombreRepetido;
-	public ElementoExistenteException(String pTipo, String pNombre) {
+	public final static String TIPO_FESTIVAL="Festival";
+	public final static String TIPO_ESCENARIO="Escenario";
+	public final static String TIPO_PRESUPUESTO="Presupuesto";
+	public final static String TIPO_CUPOS="Cupos";
+	private String tipoElemento;
+	private String tipoLimite;
+
+	public CupoMaximoException(String pTipoElemento, String pTipoLimite) {
 		// TODO Auto-generated constructor stub
 		super();
-		tipoRepetido=pTipo;
-		nombreRepetido=pNombre;
+		tipoElemento= pTipoElemento;
+		tipoLimite= pTipoLimite;
 		escribirLog();
-
 	}
+
 	public void escribirLog() {
 		// TODO Auto-generated method stub
 
@@ -37,7 +40,8 @@ public class ElementoExistenteException extends Exception {
 				escritor= new PrintWriter(archivo);
 			}
 
-			escritor.println( fecha.toString( ) + "- Elemento Repetido: " +  tipoRepetido + " " +nombreRepetido + " ya existe." );
+
+			escritor.println( fecha.toString( ) + "- Cupo Maximo Excedido: " + tipoElemento + " " + tipoLimite );
 			escritor.close( );
 		}
 		catch( FileNotFoundException e )
@@ -45,7 +49,6 @@ public class ElementoExistenteException extends Exception {
 
 			e.printStackTrace();
 		}
-
 	}
 
 }

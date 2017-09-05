@@ -8,23 +8,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 
-public class ElementoExistenteException extends Exception {
+public class FormatoArchivoException extends Exception {
 
-	public final static String PATROCINADOR= "Patrocinador";
-	public final static String BANDA= "Banda";
-	String tipoRepetido;
-	String nombreRepetido;
-	public ElementoExistenteException(String pTipo, String pNombre) {
+	public FormatoArchivoException(String pCausa) {
 		// TODO Auto-generated constructor stub
-		super();
-		tipoRepetido=pTipo;
-		nombreRepetido=pNombre;
-		escribirLog();
-
+		super(pCausa);
+		escribirLog(pCausa);
 	}
-	public void escribirLog() {
-		// TODO Auto-generated method stub
 
+	public void escribirLog(String pCausa) {
+		// TODO Auto-generated method stub
 		Date fecha = new Date();
 		PrintWriter escritor;
 		try
@@ -37,7 +30,7 @@ public class ElementoExistenteException extends Exception {
 				escritor= new PrintWriter(archivo);
 			}
 
-			escritor.println( fecha.toString( ) + "- Elemento Repetido: " +  tipoRepetido + " " +nombreRepetido + " ya existe." );
+			escritor.println( fecha.toString( ) + pCausa );
 			escritor.close( );
 		}
 		catch( FileNotFoundException e )
@@ -45,7 +38,7 @@ public class ElementoExistenteException extends Exception {
 
 			e.printStackTrace();
 		}
-
+		
 	}
 
 }
