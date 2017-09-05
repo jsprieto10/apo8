@@ -1,0 +1,22 @@
+﻿/**
+     * Agrega una banda al escenario. <br>
+     * <b>post:</b> Se agregó a la lista de bandas una nueva banda con las características recibidas por parámetro. <br>
+     * @param pNombre Nombre de la banda a agregar. pNombre != null && pNombre != "".
+     * @param pCantidadDeFans Cantidad de fans que tiene la banda. pCantidadDeFans > 0.
+     * @param pCantidadDeCanciones Cantidad de canciones que tocará la banda. pCantidadDeCanciones > 0.
+     * @param pCosto Costo de la banda por presentarse en un escenario. pCosto > 0.
+     * @param pRutaImagen Ruta de la imagen descriptiva de la banda. pRutaImagen != null && pRutaImagen != "".
+     * @throws ElementoExistenteException Si ya existe una banda con el nombre dado por parámetro.
+     * @throws CupoMaximoException Si el escenario ha alcanzado el límite de bandas en su repertorio o si no hay presupuesto disponible para costear esta banda.
+     */
+    public void agregarBanda( String pNombre, int pCantidadDeFans, int pCantidadDeCanciones, double pCosto, String pRutaImagen ) throws ElementoExistenteException, CupoMaximoException
+    
+
+/**
+     * Elimina la banda con el nombre dado del escenario. <br>
+     * <b>pre: </b> La banda con este nombre existe en el escenario. <br>
+     * <b>post:</b> Se eliminó la banda de la lista <br>
+     * @param pNombre Nombre de la banda a eliminar. pNombre != null && pNombre != "".
+     * @throws Exception En caso de que se esté intentando eliminar la última banda restante en el escenario.
+     */
+    public void eliminarBanda( String pNombre ) throws Exception
