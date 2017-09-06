@@ -159,12 +159,12 @@ public class Escenario implements Serializable
      */
     public void agregarBanda( String pNombre, int pCantidadDeFans, int pCantidadDeCanciones, double pCosto, String pRutaImagen ) throws ElementoExistenteException, CupoMaximoException
     {
-    	if (buscarPorNombre( pNombre ) == null)
+    	if (buscarPorNombre( pNombre ) != null)
     		throw new ElementoExistenteException("Banda", pNombre);
     	
-    	if (darCostoAcumulado() + pCosto < presupuesto )
+    	if (darCostoAcumulado() + pCosto > presupuesto )
     		throw new CupoMaximoException("Banda", presupuesto+"");
-    	if (bandas.size() > CANTIDAD_MAXIMA_BANDAS)
+    	if (bandas.size() >= CANTIDAD_MAXIMA_BANDAS)
     		throw new CupoMaximoException("Banda", ""+CANTIDAD_MAXIMA_BANDAS);
     		
             Banda banda = new Banda( pNombre, pCantidadDeFans, pCantidadDeCanciones, pCosto, pRutaImagen );

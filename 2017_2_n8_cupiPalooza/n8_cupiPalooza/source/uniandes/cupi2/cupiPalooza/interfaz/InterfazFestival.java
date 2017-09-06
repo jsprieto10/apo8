@@ -113,7 +113,7 @@ public class InterfazFestival extends JFrame
         try
         {
             festival = new Festival( ARCHIVO_SERIALIZACION );
-            ArrayList losEscenarios = festival.darEscenarios( );
+            ArrayList<Escenario> losEscenarios = festival.darEscenarios( );
             for( int i = 0; i < losEscenarios.size( ); i++ )
             {
                 Escenario escenario = ( Escenario )losEscenarios.get( i );
@@ -122,7 +122,8 @@ public class InterfazFestival extends JFrame
 
             if( losEscenarios.size( ) != 0 )
             {
-                actual = festival.darEscenario( 1 );
+                actual = (Escenario) festival.darEscenarios().get(0);
+                System.out.println(actual.darPatrocinador());
                 panelBandas.actualizar( actual.darBandas( ), actual.darNumero( ), actual.darPatrocinador( ) );
             }
             else
@@ -133,6 +134,7 @@ public class InterfazFestival extends JFrame
         }
         catch( Exception e )
         {
+        	e.printStackTrace();
             panelBandas.inhabilitar( );
             JOptionPane.showMessageDialog( this, e.getMessage( ), "Cargar", JOptionPane.ERROR_MESSAGE );
         }

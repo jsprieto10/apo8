@@ -550,8 +550,8 @@ public class FestivalTest
         // Caso de prueba 2
         try
         {
-            festival.guardar( "./test/data/archivoTest.data" );
-            festival.cargar( "./test/data/archivoTest.data" );
+            festival.guardar( "./data/archivoTest.data" );
+            festival.cargar( "./data/archivoTest.data" );
         }
         catch( PersistenciaException e )
         {
@@ -572,7 +572,7 @@ public class FestivalTest
         // Caso de prueba 1
         try
         {
-            festival.guardar( "./test/data/archivoTest.data" );
+            festival.guardar( "./data/archivoTest.data" );
         }
         catch( PersistenciaException e )
         {

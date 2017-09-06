@@ -1,0 +1,30 @@
+Reporte costos escenarios
+Fecha: Tue Sep 05 18:00:30 COT 2017
+Total escenarios: 3
+=====================================================
+Escenario Movistar
+Presupuesto 2.0E7
+Presupuesto en uso3500000.0
+Bandas 4
+Seis Peatones - Costo: $750000.0
+Zoey - Costo: $850000.0
+Randy Travis - Costo: $1200000.0
+Batalla Épica - Costo: $700000.0
+=====================================================
+Escenario Adidas
+Presupuesto 5.0E7
+Presupuesto en uso3516000.0
+Bandas 5
+Plásticos Adolescentes - Costo: $480000.0
+Monos Sin Disfraz - Costo: $1050000.0
+Korean Kitchen - Costo: $220000.0
+Cultura Profética - Costo: $876000.0
+John Waters - Costo: $890000.0
+=====================================================
+Escenario Google
+Presupuesto 1.5E7
+Presupuesto en uso4264000.0
+Bandas 3
+Pixie Wings - Costo: $564000.0
+Fiesta Flow - Costo: $1300000.0
+Los Melancólicos - Costo: $2400000.0

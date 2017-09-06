@@ -12,19 +12,23 @@
 package uniandes.cupi2.cupiPalooza.mundo;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
-import uniandes.cupi2.centroDeConvenciones.mundo.EspacioTieneEventoFechaException;
-import uniandes.cupi2.centroDeConvenciones.mundo.FormatoArchivoException;
-import uniandes.cupi2.centroDeConvenciones.mundo.PersistenciaException;
+import uniandes.cupi2.cupiPalooza.test.EscenarioTest;
 
 /**
  * Festival de música. <br>
@@ -60,7 +64,6 @@ public class Festival implements Serializable
 	// -----------------------------------------------------------------
 	// Constructores
 	// -----------------------------------------------------------------
-
 	/**
 	 * Construye el festival con su estado inicial a partir de un archivo serializado. <br>
 	 * <b>post: </b> Se cargó el estado inicial del festival con la información del archivo dado por parámetro. <br>
@@ -68,14 +71,14 @@ public class Festival implements Serializable
 	 * Si no existe el archivo seralizado, crea el arrayList vacío.
 	 * @param pRuta Ruta del archivo del cual se cargará el estado del mundo.
 	 * @throws PersistenciaException Se lanza una excepción si hay algún error cargando los datos del archivo.
-	 * @throws CupoMaximoException 
-	 * @throws ElementoExistenteException 
 	 */
-	public Festival( File pFile) throws PersistenciaException, ElementoExistenteException, CupoMaximoException
+	public Festival( String pRuta ) throws PersistenciaException
 	{
-		if (pFile.exists())
+		File file = new File(pRuta);
+		if (file.exists())
 		{
-			cargar(pFile.getAbsolutePath());
+			escenarios = new ArrayList();
+			cargar(pRuta);
 		}
 		else
 			escenarios = new ArrayList();
@@ -156,7 +159,7 @@ public class Festival implements Serializable
 	public void crearEscenario( String pPatrocinador, double pPresupuesto, int pNumero ) throws ElementoExistenteException, CupoMaximoException
 	{
 		boolean repetido = false;
-		if( escenarios.size( ) > CANTIDAD_MAXIMA_ESCENARIOS )
+		if( escenarios.size( ) >= CANTIDAD_MAXIMA_ESCENARIOS )
 			throw new CupoMaximoException("Escenario", "Cantidad Maxima Escenarios");
 
 		for( int i = 0; i < escenarios.size( ) && !repetido; i++ )
@@ -286,15 +289,23 @@ public class Festival implements Serializable
 	public void guardar( String pRuta ) throws PersistenciaException
 	{
 		try
-        {
-            ObjectOutputStream objeto = new ObjectOutputStream( new FileOutputStream( pRuta ) );
-            objeto.writeObject( escenarios );
-            objeto.close( );
-        }
-        catch(IOException e)
-        {
-            throw new PersistenciaException( "Error al guardar:" + e.getMessage( ) );
-        }
+		{	ObjectOutputStream objeto;
+		try {
+			objeto = new ObjectOutputStream(new FileOutputStream(pRuta));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			File archivo = new File(pRuta);
+			objeto = new ObjectOutputStream(new FileOutputStream(archivo));
+
+		}
+		objeto.writeObject( escenarios );
+		objeto.close( );
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new PersistenciaException( "Error al guardar:" + e.getMessage( ) );
+		}
 	}
 
 
@@ -307,15 +318,15 @@ public class Festival implements Serializable
 	public void cargar( String pArchivo ) throws PersistenciaException
 	{
 		try
-        {ObjectInputStream objeto = new ObjectInputStream( new FileInputStream( pArchivo ) );
-
-        escenarios= ( ArrayList)objeto.readObject( ) ;
-        objeto.close( );
-        }
-        catch (Exception e)
-        {
-            throw new PersistenciaException( "error:" + e.getMessage( ) );
-        }
+		{
+			ObjectInputStream objeto = new ObjectInputStream( new FileInputStream( pArchivo ) );
+			escenarios = ( ArrayList)objeto.readObject( ) ;
+			objeto.close( );
+		}
+		catch (Exception e)
+		{
+			throw new PersistenciaException( "error:" + e.getMessage( ) );
+		}
 	}
 
 
@@ -330,43 +341,47 @@ public class Festival implements Serializable
 	{
 		try
 		{
-		 File archivo = new File(pNombreArchivo.getAbsolutePath());
-         FileReader reader = new FileReader(archivo);
-         BufferedReader lector= new BufferedReader( reader );
-         
-         String linea = lector.readLine();
-         escenarios = new ArrayList();
-         int posicionEscenario = -1;
-         while (linea != null)
-         {
-        	 
-        	 String[] valores = lector.readLine().split(";");
-        	 if (valores.length == 3)
-        	 {
-        		 String patrocinador = valores[0];
-        		 int presupuesto = Integer.parseInt(valores[1]);
-        		 int numero = Integer.parseInt(valores[2]);
-        		 crearEscenario(patrocinador, presupuesto, numero);
-        		 posicionEscenario++;
-        	 }
-        	 else if (valores.length == 5)
-        	 {
-        		 
-        	 }
-        		 
-         }
-         
+			File archivo = new File(pNombreArchivo.getAbsolutePath());
+			FileReader reader = new FileReader(archivo);
+			BufferedReader lector= new BufferedReader( reader );
+			String linea = lector.readLine();
+			linea = lector.readLine();
+			int EscenarioActual = 0;
+			while (linea != null)
+			{
+				String[] valores = linea.split(";");
+				if (valores.length == 3)
+				{
+					String patrocinador = valores[0];
+					int presupuesto = Integer.parseInt(valores[1]);
+					EscenarioActual = darNumeroDisponible();
+					crearEscenario(patrocinador, presupuesto, EscenarioActual);
+
+				}
+				else if (valores.length == 5)
+				{
+					String nombre = valores[0];
+					int fans = Integer.parseInt(valores[1]);
+					int canciones = Integer.parseInt(valores[2]);
+					int costo = Integer.parseInt(valores[3]);
+					String imagen = valores[4];
+					agregarBandaAEscenario(EscenarioActual, nombre, fans, canciones, costo, imagen);
+				}
+				linea = lector.readLine();
+			}
+			lector.close();
+			reader.close();
 		}
-        catch(IOException e)
-        {
-            throw new FormatoArchivoException("Error: "+ e.getMessage( ) );
-        }
-        catch(Exception e)
-        {
-            throw new FormatoArchivoException("Error: " + e.getMessage( ) );
-        }
-         
-         
+		catch(IOException e)
+		{
+			throw new FormatoArchivoException("Error: "+ e.getMessage( ) );
+		}
+		catch(Exception e)
+		{
+			throw new FormatoArchivoException("Error: " + e.getMessage( ) );
+		}
+
+
 	}
 
 
@@ -379,7 +394,43 @@ public class Festival implements Serializable
 	 */
 	public void generarReporte( String pRuta ) throws PersistenciaException
 	{
+		try
+		{
+			File archivo = new File (pRuta);
+			if (!archivo.exists())
+			{
+				PrintWriter escritor = new PrintWriter( archivo );
+				DateFormat formato= new SimpleDateFormat( "dd-MM-yyyy" );
+				Date fechaA= new Date();
+				formato.format( fechaA );
+				String fecha = fechaA.toString( );
 
+				escritor.println("Reporte costos escenarios");
+				escritor.println("Fecha: "+fecha);
+				escritor.println("Total escenarios: "+escenarios.size());
+				for (int i = 0; i < escenarios.size(); i++)
+				{
+					escritor.println("=====================================================");
+					Escenario actual = (Escenario) escenarios.get(i);
+					escritor.println("Escenario "+ actual.darPatrocinador());
+					escritor.println("Presupuesto "+ actual.darPresupuesto());
+					escritor.println("Presupuesto en uso"+ actual.darCostoAcumulado());
+					ArrayList bandas = actual.darBandas();
+					escritor.println("Bandas "+ bandas.size());
+					for (int j = 0; j < bandas.size(); j++)
+					{
+						Banda banda = (Banda) bandas.get(j);
+						escritor.println(banda.darNombre()+" - Costo: $"+banda.darCosto() );
+					}
+				}
+				escritor.close();
+			}
+
+		}
+		catch (Exception e)
+		{
+
+		}
 	}
 
 

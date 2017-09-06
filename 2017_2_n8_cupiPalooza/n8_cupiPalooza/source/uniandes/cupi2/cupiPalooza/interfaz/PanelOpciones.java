@@ -100,11 +100,13 @@ public class PanelOpciones extends JPanel implements ActionListener
     /**
      * Combo box con las opciones de ordenamiento.
      */
+    private JComboBox comboOrdenamiento;
     // TODO : Declarar el atributo comboOrdenamiento
 
     /**
      * Combo box con las opciones de búsqueda.
      */
+    private JComboBox comboBusqueda;
     // TODO : Declarar el atributo comboBusqueda 
 
     /**
@@ -159,6 +161,9 @@ public class PanelOpciones extends JPanel implements ActionListener
         add( opciones, BorderLayout.SOUTH );
 
         comboOrdenamiento = new JComboBox( );
+        comboOrdenamiento.addItem(ORDENAR_NOMBRE);
+        comboOrdenamiento.addItem(ORDENAR_CANCIONES);
+        comboOrdenamiento.addItem(ORDENAR_FANS);
         //TODO : Añadir los items de los tipos de ordenamiento a comboOrdenamiento
         acciones.add( comboOrdenamiento );
 
@@ -167,7 +172,10 @@ public class PanelOpciones extends JPanel implements ActionListener
         btnOrdenar.setActionCommand( ORDENAR );
         acciones.add( btnOrdenar );
 
+        
         comboBusqueda = new JComboBox( );
+        comboBusqueda.addItem(BUSCAR_POR_NOMBRE);
+        comboBusqueda.addItem(BUSCAR_POR_CANCIONES);
         //TODO : Añadir los items de los tipos de busqueda a comoBusqueda
         acciones.add( comboBusqueda );
 
@@ -212,7 +220,8 @@ public class PanelOpciones extends JPanel implements ActionListener
         if( comando.equals( ORDENAR ) )
         {
             //TODO Crear la variable tipo String ordenamiento para obtener el tipo de ordenamiento seleccionado de comboOrdenamiento
-            if( ordenamiento.equals( ORDENAR_NOMBRE ) )
+            String ordenamiento = (String) comboOrdenamiento.getSelectedItem();
+        	if( ordenamiento.equals( ORDENAR_NOMBRE ) )
             {
                 interfaz.ordenarPorNombre( );
             }
@@ -228,7 +237,8 @@ public class PanelOpciones extends JPanel implements ActionListener
         else if( comando.equals( BUSCAR ) )
         {
             //TODO Crear la variable tipo String busqueda para obtener el tipo de búsqueda seleccionado de comboBusqueda
-			if( busqueda.equals( BUSCAR_POR_NOMBRE ) )
+			String busqueda = (String) comboBusqueda.getSelectedItem();
+        	if( busqueda.equals( BUSCAR_POR_NOMBRE ) )
             {
                 interfaz.buscarBandaPorNombre( );
             }
